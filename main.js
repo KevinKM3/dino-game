@@ -10,6 +10,11 @@ let obstacles;
 let gameSpeed;
 let keys = [];
 
+// Event Listeners
+document.addEventListener("keydown", function (evt) {
+  keys[evt.code] = true;
+});
+
 class Player {
   constructor(x, y, w, h, c) {
     this.x = x;
@@ -21,7 +26,23 @@ class Player {
     this.dy = 0;
     this.jumpForce = 15;
     this.originalHeight = h;
+    this.grounded = false;
   }
+
+  Animate() {
+    // Gravity
+    if (this.y + this.h < canvas.height) {
+      this.dy += gravity;
+      this.grounded = false;
+    } else {
+      this.dy = 0;
+      this.grounded = true;
+      this.y = canvas.height - this.h;
+    }
+    this.y += this.dy;
+    this.Draw();
+  }
+
   Draw() {
     ctx.beginPath();
     ctx.fillStyle = this.c;
@@ -42,8 +63,16 @@ function Start() {
   score = 0;
   highscore = 0;
 
-  player = new Player(25, canvas.height - 150, 50, 50, "#FF5858");
-  player.Draw();
+  player = new Player(25, 0, 50, 50, "#FF5858");
+
+  requestAnimationFrame(Update);
+}
+
+function Update() {
+  requestAnimationFrame(Update);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  player.Animate();
 }
 
 Start();
