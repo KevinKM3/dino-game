@@ -8,11 +8,14 @@ let player;
 let gravity;
 let obstacles;
 let gameSpeed;
-let keys = [];
+let keys = {};
 
 // Event Listeners
 document.addEventListener("keydown", function (evt) {
   keys[evt.code] = true;
+});
+document.addEventListener("keyup", function (evt) {
+  keys[evt.code] = false;
 });
 
 class Player {
@@ -27,9 +30,19 @@ class Player {
     this.jumpForce = 15;
     this.originalHeight = h;
     this.grounded = false;
+    this.jumpTimer = 0;
   }
 
   Animate() {
+    // Jump
+    if (keys["Space"] || keys["KeysW"]) {
+      this.Jump();
+    } else {
+      this.jumpTimer = 0;
+    }
+
+    this.y += this.dy;
+
     // Gravity
     if (this.y + this.h < canvas.height) {
       this.dy += gravity;
@@ -39,8 +52,18 @@ class Player {
       this.grounded = true;
       this.y = canvas.height - this.h;
     }
-    this.y += this.dy;
+
     this.Draw();
+  }
+
+  Jump() {
+    if (this.grounded && this.jumpTimer == 0) {
+      this.jumpTimer = 1;
+      this.dy = -this.jumpForce;
+    } else if (this.jumpTimer > 0 && this.jumpTimer < 15) {
+      this.jumpTimer++;
+      this.dy = -this.jumpForce - this.jumpTimer / 50;
+    }
   }
 
   Draw() {
