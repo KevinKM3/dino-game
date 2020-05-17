@@ -3,7 +3,9 @@ const ctx = canvas.getContext("2d");
 
 // Variables
 let score;
+let scoreText;
 let highscore;
+let highscoreText;
 let player;
 let gravity;
 let obstacles = [];
@@ -105,6 +107,26 @@ class Obstacle {
   }
 }
 
+class Text {
+  constructor(t, x, y, a, c, s) {
+    this.t = t;
+    this.x = x;
+    this.y = y;
+    this.a = a;
+    this.c = c;
+    this.s = s;
+  }
+
+  Draw() {
+    ctx.beginPath();
+    ctx.fillStyle = this.c;
+    ctx.font = this.s + "px sans-serif";
+    ctx.textAlign = this.a;
+    ctx.fillText(this.t, this.x, this.y);
+    ctx.closePath();
+  }
+}
+
 // Game Functions
 function SpawnObstacle() {
   let size = RandomIntRange(20, 70);
@@ -141,6 +163,8 @@ function Start() {
 
   player = new Player(25, 0, 50, 50, "#FF5858");
 
+  scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
+
   requestAnimationFrame(Update);
 }
 
@@ -168,6 +192,11 @@ function Update() {
   }
 
   player.Animate();
+
+  score++;
+  scoreText.Draw();
+
+  gameSpeed += 0.003;
 }
 
 Start();
