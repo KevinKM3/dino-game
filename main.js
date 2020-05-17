@@ -160,10 +160,22 @@ function Start() {
 
   score = 0;
   highscore = 0;
+  if (localStorage.getItem("highscore")) {
+    highscore = localStorage.getItem("highscore");
+  }
 
   player = new Player(25, 0, 50, 50, "#FF5858");
 
   scoreText = new Text("Score: " + score, 25, 25, "left", "#212121", "20");
+
+  highscoreText = new Text(
+    "Highscore: " + highscore,
+    canvas.width - 25,
+    25,
+    "right",
+    "#212121",
+    "20"
+  );
 
   requestAnimationFrame(Update);
 }
@@ -188,13 +200,38 @@ function Update() {
   for (let i = 0; i < obstacles.length; i++) {
     let o = obstacles[i];
 
+    if (o.x + o.w < 0) {
+      obstacles.splice(i, 1);
+    }
+
+    if (
+      player.x < o.x + o.w &&
+      player.x + player.w > o.x &&
+      player.y < o.y + o.h &&
+      player.y + player.h > o.y
+    ) {
+      obstacles = [];
+      score = 0;
+      spawnTimer = initialSpawnTimer;
+      gameSpeed = 3;
+      window.localStorage.setItem("highscore", highscore);
+    }
+
     o.Update();
   }
 
   player.Animate();
 
   score++;
+  scoreText.t = "Score: " + score;
   scoreText.Draw();
+
+  if (score > highscore) {
+    highscore = score;
+    highscoreText.t = "Highscore: " + highscore;
+  }
+
+  highscoreText.Draw();
 
   gameSpeed += 0.003;
 }
